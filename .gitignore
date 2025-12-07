@@ -205,3 +205,12 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Ignore specific documentation and system files
+.DS_Store
+CODE_FILES_PART1.md
+GET_STARTED.md
+INDEX.md
+PROGRESS_TRACKER.md
+PROJECT_SUMMARY.md
+
