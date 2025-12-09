@@ -22,7 +22,10 @@ def create_app(config_name=None):
         Configured Flask app
     """
     # Create Flask app
-    app = Flask(__name__)
+    # app = Flask(__name__)
+    app = Flask(__name__, 
+            static_folder='../frontend',
+            static_url_path='/static')
     
     # Load configuration
     config = get_config(config_name)
@@ -32,9 +35,11 @@ def create_app(config_name=None):
     # This allows your frontend to communicate with the backend
     CORS(app, resources={
         r"/api/*": {
-            "origins": app.config['CORS_ORIGINS'],
+            "origins": "*",  # Allow all origins
             "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-            "allow_headers": ["Content-Type", "Authorization"]
+            "allow_headers": ["Content-Type", "Authorization"],
+            "expose_headers": ["Content-Type"],
+            "supports_credentials": False  # Changed to False
         }
     })
     
@@ -123,7 +128,7 @@ if __name__ == '__main__':
     In production, use: gunicorn run:app
     """
     # Get port from environment or default to 5000
-    port = int(os.getenv('PORT', 5003))
+    port = int(os.getenv('PORT', 5004))
     
     # Run the app
     app.run(
