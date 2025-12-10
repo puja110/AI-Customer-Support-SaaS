@@ -4,6 +4,7 @@ Flask-CORS==4.0.0
 Flask-SocketIO==5.3.5
 python-socketio==5.10.0
 Werkzeug==3.0.1
+gunicorn==21.2.0
 
 # Database (SQLite for development)
 SQLAlchemy==2.0.23

@@ -617,11 +617,13 @@ Customer: Clicks "Subscribe to Pro"
 ## Scalability Considerations
 
 ### Current Architecture (MVP - 100 users)
+
 - Single server (Render)
 - SQLite/PostgreSQL
 - ChromaDB local instance
 
 ### Growth Phase (1,000 users)
+
 - Load balancer
 - Multiple app instances
 - Managed PostgreSQL
@@ -629,6 +631,7 @@ Customer: Clicks "Subscribe to Pro"
 - ChromaDB with persistent storage
 
 ### Scale Phase (10,000+ users)
+
 - Kubernetes cluster
 - Database replicas
 - Microservices (optional)
@@ -681,23 +684,24 @@ Customer: Clicks "Subscribe to Pro"
 
 ## Technology Justification
 
-| Tech | Why? | Alternatives |
-|------|------|--------------|
-| Flask | Lightweight, Python, great for APIs | FastAPI, Django |
-| Vanilla JS | No build step, fast loading | React, Vue |
-| ChromaDB | Easy setup, Python native | Pinecone, Weaviate |
-| SQLite→PostgreSQL | Simple dev, powerful prod | MySQL, MongoDB |
-| OpenAI | Best-in-class LLMs | Anthropic Claude, local models |
-| Stripe | Industry standard payments | PayPal, Paddle |
-| Render | Easy deployment, good free tier | Heroku, AWS, GCP |
+| Tech              | Why?                                | Alternatives                   |
+| ----------------- | ----------------------------------- | ------------------------------ |
+| Flask             | Lightweight, Python, great for APIs | FastAPI, Django                |
+| Vanilla JS        | No build step, fast loading         | React, Vue                     |
+| ChromaDB          | Easy setup, Python native           | Pinecone, Weaviate             |
+| SQLite→PostgreSQL | Simple dev, powerful prod           | MySQL, MongoDB                 |
+| OpenAI            | Best-in-class LLMs                  | Anthropic Claude, local models |
+| Stripe            | Industry standard payments          | PayPal, Paddle                 |
+| Render            | Easy deployment, good free tier     | Heroku, AWS, GCP               |
 
 ---
 
 This architecture is designed to:
+
 - ✅ Start simple (MVP)
 - ✅ Scale gradually
 - ✅ Keep costs low initially
 - ✅ Be maintainable by one developer
 - ✅ Follow industry best practices
 
-Ready to build? Start with `docs/PHASE_2_GUIDE.md`! 🚀
+Ready to build? Start with `docs/PHASE_2_GUIDE.md`!

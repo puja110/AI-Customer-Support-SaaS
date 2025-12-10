@@ -105,7 +105,7 @@ def create_app(config_name=None):
     # Log configuration in development
     if app.debug:
         print("\n" + "="*50)
-        print("🚀 Flask Application Started")
+        print("Flask Application Started")
         print("="*50)
         print(f"Environment: {app.config.get('ENV', 'development')}")
         print(f"Debug Mode: {app.debug}")

@@ -1,9 +1,11 @@
 # AI-Powered Customer Support SaaS
 
-## 🎯 Project Overview
+## Project Overview
+
 A micro-SaaS platform that provides AI-powered customer support chatbots with sentiment analysis for SMBs.
 
 ### Core Features
+
 1. **RAG-based Chatbot** - Trained on company-specific documents and FAQs
 2. **Sentiment Analysis** - Prioritizes urgent/frustrated customers
 3. **Ticket Management** - Auto-categorization and routing
@@ -13,7 +15,7 @@ A micro-SaaS platform that provides AI-powered customer support chatbots with se
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -67,41 +69,48 @@ A micro-SaaS platform that provides AI-powered customer support chatbots with se
 ## 📚 Learning Path & Development Phases
 
 ### **Phase 1: Foundation (Week 1-2)**
+
 **Goal:** Set up environment, understand core concepts
 
 1. **Environment Setup**
+
    - Install Python 3.10+, Node.js, Git
    - Set up virtual environment
    - Install dependencies
    - Configure IDE (VS Code recommended)
 
 2. **Core Concepts to Learn:**
+
    - REST API principles
    - JWT authentication
    - Vector databases & embeddings
    - RAG (Retrieval Augmented Generation)
    - Sentiment analysis basics
 
-3. **Deliverable:** 
+3. **Deliverable:**
    - Working Flask API with health check endpoint
    - Basic understanding of LangChain
 
 ---
 
 ### **Phase 2: AI Chat Engine (Week 3-4)**
+
 **Goal:** Build the core AI functionality
 
 1. **Vector Database Setup**
+
    - Initialize ChromaDB
    - Create document ingestion pipeline
    - Implement embedding generation
 
 2. **RAG Implementation**
+
    - Set up LangChain with OpenAI
    - Create retrieval chain
    - Implement context-aware responses
 
 3. **Sentiment Analysis**
+
    - Integrate transformers library
    - Implement sentiment scoring
    - Create priority queue logic
@@ -113,20 +122,24 @@ A micro-SaaS platform that provides AI-powered customer support chatbots with se
 ---
 
 ### **Phase 3: Backend API (Week 5-6)**
+
 **Goal:** Build complete backend infrastructure
 
 1. **Database Models**
+
    - User/Organization models
    - Conversation/Message models
    - Ticket models
    - Subscription models
 
 2. **Authentication System**
+
    - JWT-based auth
    - Organization multi-tenancy
    - API key generation for embed widget
 
 3. **API Endpoints**
+
    - Chat endpoints (WebSocket)
    - Admin CRUD operations
    - Analytics endpoints
@@ -140,21 +153,25 @@ A micro-SaaS platform that provides AI-powered customer support chatbots with se
 ---
 
 ### **Phase 4: Frontend Development (Week 7-8)**
+
 **Goal:** Build user interfaces
 
 1. **Landing Page**
+
    - Marketing copy
    - Pricing plans
    - Feature showcase
    - Sign up flow
 
 2. **Admin Dashboard**
+
    - Conversation history
    - Analytics dashboard
    - Document management
    - Settings panel
 
 3. **Embeddable Chat Widget**
+
    - Lightweight JavaScript widget
    - Customizable styling
    - WebSocket connection
@@ -167,15 +184,18 @@ A micro-SaaS platform that provides AI-powered customer support chatbots with se
 ---
 
 ### **Phase 5: Payment Integration (Week 9)**
+
 **Goal:** Implement Stripe subscriptions
 
 1. **Stripe Setup**
+
    - Create products & pricing
    - Implement checkout flow
    - Handle webhooks
    - Subscription management
 
 2. **Features:**
+
    - Free tier (100 messages/month)
    - Pro tier ($49/month - 5,000 messages)
    - Enterprise tier ($199/month - unlimited)
@@ -187,14 +207,17 @@ A micro-SaaS platform that provides AI-powered customer support chatbots with se
 ---
 
 ### **Phase 6: Testing & Optimization (Week 10)**
+
 **Goal:** Ensure quality and performance
 
 1. **Testing**
+
    - Unit tests for services
    - API integration tests
    - Load testing (simulate 100 concurrent chats)
 
 2. **Optimization**
+
    - Response caching
    - Rate limiting
    - Error handling
@@ -207,15 +230,18 @@ A micro-SaaS platform that provides AI-powered customer support chatbots with se
 ---
 
 ### **Phase 7: Deployment (Week 11)**
+
 **Goal:** Launch to production
 
 1. **Backend Deployment (Render)**
+
    - Configure production database
    - Environment variables
    - SSL certificates
    - Domain setup
 
 2. **Frontend Deployment (Vercel/Netlify)**
+
    - Build optimization
    - CDN configuration
    - Custom domain
@@ -227,9 +253,11 @@ A micro-SaaS platform that provides AI-powered customer support chatbots with se
 ---
 
 ### **Phase 8: Launch & Iteration (Week 12+)**
+
 **Goal:** Get first customers
 
 1. **Marketing**
+
    - Product Hunt launch
    - Content marketing
    - Free tier for feedback
@@ -244,6 +272,7 @@ A micro-SaaS platform that provides AI-powered customer support chatbots with se
 ## 🛠️ Tech Stack Details
 
 ### Backend
+
 - **Flask** - Web framework
 - **SQLAlchemy** - ORM
 - **Flask-SocketIO** - WebSocket support
@@ -255,6 +284,7 @@ A micro-SaaS platform that provides AI-powered customer support chatbots with se
 - **pytest** - Testing
 
 ### Frontend
+
 - **Vanilla JavaScript** - No framework overhead
 - **WebSocket API** - Real-time chat
 - **Fetch API** - HTTP requests
@@ -262,6 +292,7 @@ A micro-SaaS platform that provides AI-powered customer support chatbots with se
 - **Chart.js** - Analytics visualization
 
 ### DevOps
+
 - **Docker** - Containerization
 - **Render** - Backend hosting
 - **Vercel/Netlify** - Frontend hosting
@@ -273,12 +304,14 @@ A micro-SaaS platform that provides AI-powered customer support chatbots with se
 ## 📊 Key Metrics to Track
 
 1. **Business Metrics**
+
    - Monthly Recurring Revenue (MRR)
    - Customer Acquisition Cost (CAC)
    - Churn Rate
    - Active Users
 
 2. **Technical Metrics**
+
    - Response time (<500ms)
    - AI accuracy rate (>85%)
    - Uptime (99.9%)
@@ -294,26 +327,30 @@ A micro-SaaS platform that provides AI-powered customer support chatbots with se
 ## 💡 Learning Resources
 
 ### Must-Read Documentation
+
 - [LangChain Documentation](https://python.langchain.com/)
 - [OpenAI API Guide](https://platform.openai.com/docs)
 - [Flask Documentation](https://flask.palletsprojects.com/)
 - [Stripe Integration Guide](https://stripe.com/docs)
 
 ### Recommended Courses
+
 - "Building LLM Applications" - DeepLearning.AI
 - "Vector Databases" - Pinecone Learning Center
 - "Flask Web Development" - Miguel Grinberg
 
 ### YouTube Channels
+
 - Langchain Official
 - Patrick Loeber (Python AI)
 - Tech With Tim (Flask tutorials)
 
 ---
 
-## 🎓 What You'll Learn
+## What You'll Learn
 
 1. **AI/ML Concepts**
+
    - Vector embeddings
    - Semantic search
    - RAG architecture
@@ -321,6 +358,7 @@ A micro-SaaS platform that provides AI-powered customer support chatbots with se
    - Prompt engineering
 
 2. **Backend Development**
+
    - RESTful API design
    - WebSocket implementation
    - Database modeling
@@ -328,6 +366,7 @@ A micro-SaaS platform that provides AI-powered customer support chatbots with se
    - Multi-tenancy patterns
 
 3. **Frontend Skills**
+
    - Real-time updates
    - State management
    - API integration
@@ -335,6 +374,7 @@ A micro-SaaS platform that provides AI-powered customer support chatbots with se
    - Widget development
 
 4. **DevOps & Production**
+
    - Cloud deployment
    - Environment management
    - Monitoring & logging
@@ -348,13 +388,13 @@ A micro-SaaS platform that provides AI-powered customer support chatbots with se
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 See `docs/SETUP.md` for detailed setup instructions.
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 ai-support-saas/
@@ -381,11 +421,11 @@ ai-support-saas/
 
 ---
 
-## 📝 Next Steps
+## Next Steps
 
 1. Review this README completely
 2. Read `docs/SETUP.md` for environment setup
 3. Follow `docs/PHASE_1_GUIDE.md` to start development
 4. Join our discussions for questions
 
-Let's build something amazing! 🎉
+Let's build something amazing!
