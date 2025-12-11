@@ -1,0 +1,10 @@
+{
+  "name": "ai-customer-support-saas",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "npx serve -s . -p ${PORT:-8080}"
+  },
+  "dependencies": {
+    "serve": "^14.2.1"
+  }
+}
