@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/", "destination": "/chat-widget.html" },
+    { "source": "/admin", "destination": "/admin-dashboard.html" }
+  ]
+}
