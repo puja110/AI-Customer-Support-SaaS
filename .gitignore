@@ -1,5 +1,6 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
+*.pyc
 *.py[codz]
 *$py.class
 
@@ -143,6 +144,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+backend/.env.example
 
 # Spyder project settings
 .spyderproject
@@ -213,4 +215,7 @@ GET_STARTED.md
 INDEX.md
 PROGRESS_TRACKER.md
 PROJECT_SUMMARY.md
+
+*.db
+data/chroma_db/
 
