@@ -4,7 +4,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     ports:
-      - "5004:5000"
+      - "5000:5000"
     environment:
       - FLASK_ENV=production
       - OPENAI_API_KEY=${OPENAI_API_KEY}

@@ -32,9 +32,11 @@ def create_app(config_name=None):
     # This allows your frontend to communicate with the backend
     CORS(app, resources={
         r"/api/*": {
-            "origins": "https://ai-customer-support-saas.vercel.app",
+            "origins": "*",  # Allow all origins
             "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-            "allow_headers": ["Content-Type", "Authorization"]
+            "allow_headers": ["Content-Type", "Authorization"],
+            "expose_headers": ["Content-Type"],
+            "supports_credentials": False  # Changed to False
         }
     })
     
@@ -43,7 +45,31 @@ def create_app(config_name=None):
     # app.register_blueprint(auth_bp, url_prefix='/api/auth')
     # app.register_blueprint(chat_bp, url_prefix='/api/chat')
     # app.register_blueprint(admin_bp, url_prefix='/api/admin')
+
+    # Register blueprints (API routes)
+    from app.api.chat import chat_bp
+    app.register_blueprint(chat_bp)
     
+    try:
+        from app.api.documents import documents_bp
+        app.register_blueprint(documents_bp)
+    except ImportError:
+        pass  # Documents API not available
+    
+    # try:
+    #     from app.api.chat import chat_bp
+    #     app.register_blueprint(chat_bp, url_prefix='/api/chat')
+    #     print("✓ Chat API registered")
+    # except ImportError as e:
+    #     print(f"⚠ Could not import chat routes: {e}")
+
+    # try:
+    #     from app.api.documents import documents_bp
+    #     app.register_blueprint(documents_bp, url_prefix='/api/documents')
+    #     print("✓ Documents API registered")
+    # except ImportError as e:
+    #     print(f"⚠ Could not import documents routes: {e}")
+
     # Basic routes for testing
     @app.route('/')
     def home():
@@ -116,7 +142,7 @@ if __name__ == '__main__':
     In production, use: gunicorn run:app
     """
     # Get port from environment or default to 5000
-    port = int(os.getenv('PORT', 5003))
+    port = int(os.getenv('PORT', 5000))
     
     # Run the app
     app.run(

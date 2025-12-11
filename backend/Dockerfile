@@ -30,10 +30,10 @@ COPY . .
 # Create directories
 RUN mkdir -p data/chroma_db logs
 
-EXPOSE 5004
+EXPOSE 5000
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:5004/health || exit 1
+    CMD curl -f http://localhost:5000/health || exit 1
 
 # Use dynamic PORT from Railway
 CMD gunicorn --bind 0.0.0.0:${PORT:-5000} --workers 1 --threads 2 --timeout 120 --access-logfile - --error-logfile - run:app
