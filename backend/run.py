@@ -32,7 +32,7 @@ def create_app(config_name=None):
     # This allows your frontend to communicate with the backend
     CORS(app, resources={
         r"/api/*": {
-            "origins": app.config['CORS_ORIGINS'],
+            "origins": "https://ai-customer-support-saas.vercel.app",
             "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
             "allow_headers": ["Content-Type", "Authorization"]
         }
