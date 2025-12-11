@@ -2,6 +2,12 @@
 
 ## Quick Navigation
 
+<<<<<<< HEAD
+
+=======
+
+> > > > > > > 663d95e (feat: add Flask backend configuration and setup)
+
 - [Phase 1: Setup](#phase-1-setup) ✓
 - [Phase 2: AI Core](#phase-2-ai-core) ← YOU ARE HERE
 - [Phase 3: Backend API](#phase-3-backend-api)
@@ -17,6 +23,12 @@
 
 ### What You Built:
 
+<<<<<<< HEAD
+
+=======
+
+> > > > > > > 663d95e (feat: add Flask backend configuration and setup)
+
 - [x] Development environment
 - [x] Python virtual environment
 - [x] Flask basic app
@@ -24,6 +36,12 @@
 - [x] Project structure
 
 ### Files Created:
+
+<<<<<<< HEAD
+
+=======
+
+> > > > > > > 663d95e (feat: add Flask backend configuration and setup)
 
 - `backend/config.py`
 - `backend/run.py`

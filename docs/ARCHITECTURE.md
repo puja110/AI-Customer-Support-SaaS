@@ -618,11 +618,23 @@ Customer: Clicks "Subscribe to Pro"
 
 ### Current Architecture (MVP - 100 users)
 
+<<<<<<< HEAD
+
+=======
+
+> > > > > > > 663d95e (feat: add Flask backend configuration and setup)
+
 - Single server (Render)
 - SQLite/PostgreSQL
 - ChromaDB local instance
 
 ### Growth Phase (1,000 users)
+
+<<<<<<< HEAD
+
+=======
+
+> > > > > > > 663d95e (feat: add Flask backend configuration and setup)
 
 - Load balancer
 - Multiple app instances
@@ -631,6 +643,12 @@ Customer: Clicks "Subscribe to Pro"
 - ChromaDB with persistent storage
 
 ### Scale Phase (10,000+ users)
+
+<<<<<<< HEAD
+
+=======
+
+> > > > > > > 663d95e (feat: add Flask backend configuration and setup)
 
 - Kubernetes cluster
 - Database replicas
