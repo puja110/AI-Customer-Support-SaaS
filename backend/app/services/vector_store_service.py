@@ -61,7 +61,8 @@ class VectorStoreService:
             name=collection_name,
             metadata={
                 "organization_id": organization_id,
-                "created_at": datetime.now(timezone.utc).isoformat()
+                "created_at": datetime.now(timezone.utc).isoformat(),
+                "hnsw:space": "cosine"
             }
         )
         
@@ -226,7 +227,7 @@ class VectorStoreService:
     def search(
         self, 
         query: str, 
-        n_results: int = 5,
+        n_results: int = 3,
         filter_metadata: Optional[Dict[str, Any]] = None
     ) -> List[Dict[str, Any]]:
         """
@@ -262,7 +263,8 @@ class VectorStoreService:
             results = self.collection.query(
                 query_embeddings=[query_embedding],
                 n_results=n_results,
-                where=where_clause
+                where=where_clause if where_clause else None,  # Enable filtering
+                include=['documents', 'metadatas', 'distances']
             )
             
             # Format results
@@ -274,8 +276,8 @@ class VectorStoreService:
                         'id': results['ids'][0][i],
                         'content': results['documents'][0][i],
                         'metadata': results['metadatas'][0][i],
-                        'score': 1 - results['distances'][0][i],  # Convert distance to similarity
-                        'distance': results['distances'][0][i]
+                        'distance': results['distances'][0][i],  # Raw distance (lower = better)
+                        'score': 1 - results['distances'][0][i]  # Similarity score (higher = better)
                     })
             
             print(f"✓ Found {len(formatted_results)} results for: '{query}'")
@@ -404,7 +406,8 @@ class VectorStoreService:
                 name=self.collection.name,
                 metadata={
                     "organization_id": self.organization_id,
-                    "created_at": datetime.now(timezone.utc).isoformat()
+                    "created_at": datetime.now(timezone.utc).isoformat(),
+                    "hnsw:space": "cosine"
                 }
             )
             

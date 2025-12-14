@@ -52,7 +52,8 @@ def send_message():
         {
             "message": "How do I reset my password?",
             "conversation_id": "conv_123",  # optional
-            "organization_id": "org_123"     # required
+            "organization_id": "org_123",     # required
+            "mode": "knowledge_base"   # "knowledge_base", "web_search", or "auto"
         }
     
     Response:
@@ -61,6 +62,7 @@ def send_message():
             "conversation_id": "conv_123",
             "sources": [...],
             "sentiment": {...},
+            "mode_used": "knowledge_base",
             "metadata": {...}
         }
     
@@ -88,6 +90,14 @@ def send_message():
         
         # Get optional fields
         conversation_id = data.get('conversation_id')
+        mode = data.get('mode', 'auto').lower()  # Get mode, default to 'auto'
+        
+        # Validate mode
+        valid_modes = ['knowledge_base', 'web_search', 'auto']
+        if mode not in valid_modes:
+            return jsonify({
+                'error': f'Invalid mode. Must be one of: {", ".join(valid_modes)}'
+            }), 400
         
         # Get chat service for this organization
         chat = get_chat_service(organization_id)
@@ -101,7 +111,8 @@ def send_message():
         result = chat.chat(
             message=message,
             conversation_history=history,
-            conversation_id=conversation_id
+            conversation_id=conversation_id,
+            mode=mode  # Pass mode to chat service
         )
         
         # Save to conversation history

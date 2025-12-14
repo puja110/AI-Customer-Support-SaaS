@@ -142,7 +142,7 @@ if __name__ == '__main__':
     In production, use: gunicorn run:app
     """
     # Get port from environment or default to 5000
-    port = int(os.getenv('PORT', 5000))
+    port = int(os.getenv('PORT', 5002))
     
     # Run the app
     app.run(

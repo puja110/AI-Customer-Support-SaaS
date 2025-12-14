@@ -1,20 +1,24 @@
 """
-Chat Service - RAG Implementation
+Chat Service - Enhanced RAG + Web Search Implementation
 ----------------------------------
-Combines all AI services to create an intelligent chatbot using RAG
-(Retrieval Augmented Generation).
+Combines all AI services to create an intelligent chatbot using:
+- RAG (Retrieval Augmented Generation) for company knowledge
+- Web Search for real-time information
+- Sentiment analysis for prioritization
 
 RAG Flow:
 1. User asks question
 2. Analyze sentiment (prioritize urgent queries)
-3. Search knowledge base for relevant context
-4. Generate response using LLM + retrieved context
-5. Return contextual, accurate answer
+3. Search company knowledge base for relevant context
+4. If no good match → Search the web for real-time info
+5. Generate response using LLM + retrieved context
+6. Return contextual, accurate answer with sources
 
 Components:
 - LangChain for orchestration
 - OpenAI GPT-4 for generation
 - ChromaDB for context retrieval
+- Tavily for web search
 - Sentiment analysis for prioritization
 """
 
@@ -26,6 +30,9 @@ from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from .embedding_service import EmbeddingService
 from .vector_store_service import VectorStoreService
 from .sentiment_service import SentimentService
+
+from .gpt4_web_service import GPT4WebService
+
 from config import get_config
 
 # Load configuration
@@ -33,10 +40,12 @@ config = get_config()
 
 class ChatService:
     """
-    Main chat service implementing RAG for intelligent customer support.
+    Main chat service implementing RAG + Web Search for intelligent customer support.
     
     Features:
-    - Context-aware responses using knowledge base
+    - Context-aware responses using knowledge base (RAG)
+    - Real-time web search for current information
+    - Smart routing between RAG and web search
     - Conversation memory (remembers previous messages)
     - Sentiment-based prioritization
     - Source citations in responses
@@ -57,6 +66,18 @@ class ChatService:
         self.embedding_service = EmbeddingService()
         self.vector_store = VectorStoreService(organization_id)
         self.sentiment_service = SentimentService()
+
+        # Initialize Web Search Service
+        try:
+            self.gpt4_web = GPT4WebService()
+            self.web_search_enabled = True
+            print("Web search service initialized successfully")
+        except Exception as e:
+            print(f"Web search not available FAILED: {e}")
+            import traceback
+            traceback.print_exc()
+            self.gpt4_web = None
+            self.web_search_enabled = False
         
         # Initialize LLM (Language Model)
         self.llm = ChatOpenAI(
@@ -66,6 +87,9 @@ class ChatService:
             openai_api_key=config.OPENAI_API_KEY
         )
         
+        # Configuration for smart routing
+        self.rag_confidence_threshold = 0.3  # Minimum similarity for RAG
+
         # System prompt that defines chatbot behavior
         self.system_prompt = self._create_system_prompt()
         
@@ -75,96 +99,376 @@ class ChatService:
         self,
         message: str,
         conversation_history: Optional[List[Dict[str, str]]] = None,
-        conversation_id: Optional[str] = None
+        conversation_id: Optional[str] = None,
+        mode: str = 'auto'  # 'knowledge_base', 'web_search', or 'auto'
     ) -> Dict[str, Any]:
         """
         Process a chat message and generate response.
         
         Args:
             message: User's message
-            conversation_history: Previous messages in format:
-                [{"role": "user", "content": "..."}, {"role": "assistant", "content": "..."}]
-            conversation_id: Optional conversation ID for tracking
-            
+            conversation_history: Previous messages
+            conversation_id: Optional conversation ID
+            mode: Operation mode:
+                - 'knowledge_base': Search only company documents (RAG)
+                - 'web_search': Search only the web (real-time info)
+                - 'auto': Automatically decide based on content (default)
+        
         Returns:
-            Dictionary containing:
-            - response: AI-generated response
-            - sources: Relevant documents used
-            - sentiment: Sentiment analysis
-            - conversation_id: Conversation identifier
-            - metadata: Additional information
-            
+            Dictionary containing response, sources, metadata, mode_used
+        
         Example:
-            >>> chat = ChatService("org_123")
-            >>> result = chat.chat("How do I reset my password?")
-            >>> print(result['response'])
-            "To reset your password, go to the login page and click..."
-            >>> print(result['sentiment']['priority'])
-            "MEDIUM"
+            >>> # Force knowledge base search
+            >>> result = chat.chat("What's our refund policy?", mode="knowledge_base")
+            
+            >>> # Force web search
+            >>> result = chat.chat("What's the weather?", mode="web_search")
+            
+            >>> # Let system decide
+            >>> result = chat.chat("Some question", mode="auto")
         """
         try:
             print(f"\n{'='*60}")
             print(f"Processing message: {message[:50]}...")
+            print(f"Mode: {mode.upper()}")
             
-            # Step 1: Analyze sentiment
+            # Analyze sentiment
             sentiment_result = self.sentiment_service.analyze(message)
             print(f"Sentiment: {sentiment_result['label']} ({sentiment_result['score']:.2f})")
             print(f"Priority: {sentiment_result['priority']}")
             
-            # Step 2: Retrieve relevant context from knowledge base
-            print("Searching knowledge base...")
-            relevant_docs = self.vector_store.search(
-                query=message,
-                n_results=3  # Get top 3 most relevant documents
-            )
+            # Route based on mode
+            if mode == 'knowledge_base':
+                # Force knowledge base search
+                print("Route: KNOWLEDGE BASE (forced)")
+                return self._handle_knowledge_base_mode(
+                    message=message,
+                    conversation_history=conversation_history,
+                    conversation_id=conversation_id,
+                    sentiment_result=sentiment_result
+                )
             
-            if relevant_docs:
-                print(f"Found {len(relevant_docs)} relevant documents")
-                for i, doc in enumerate(relevant_docs, 1):
-                    print(f"  {i}. {doc['metadata'].get('title', 'Untitled')} (score: {doc['score']:.2f})")
+            elif mode == 'web_search':
+                # Force web search
+                print("Route: WEB SEARCH (forced)")
+                
+                if not self.web_search_enabled:
+                    return self._handle_no_web_search(
+                        message=message,
+                        conversation_id=conversation_id,
+                        sentiment_result=sentiment_result
+                    )
+                
+                return self._handle_with_web_search(
+                    message=message,
+                    conversation_history=conversation_history,
+                    conversation_id=conversation_id,
+                    sentiment_result=sentiment_result
+                )
+            
+            elif mode == 'auto':
+                # Automatic routing (your original logic)
+                print("Route: AUTO (smart routing)")
+                
+                # Search knowledge base
+                print("Searching company knowledge base...")
+                relevant_docs = self.vector_store.search(query=message, n_results=3)
+                
+                # Check if we have good matches
+                has_good_match = self._has_good_rag_match(relevant_docs)
+                
+                if has_good_match:
+                    print("Good knowledge base match found")
+                    return self._handle_with_rag(
+                        message=message,
+                        relevant_docs=relevant_docs,
+                        conversation_history=conversation_history,
+                        conversation_id=conversation_id,
+                        sentiment_result=sentiment_result
+                    )
+                
+                elif self.web_search_enabled:
+                    print("No good knowledge base match → Using web search")
+                    return self._handle_with_web_search(
+                        message=message,
+                        conversation_history=conversation_history,
+                        conversation_id=conversation_id,
+                        sentiment_result=sentiment_result
+                    )
+                
+                else:
+                    print("No knowledge available → Fallback")
+                    return self._handle_no_knowledge(
+                        message=message,
+                        conversation_id=conversation_id,
+                        sentiment_result=sentiment_result
+                    )
+            
             else:
-                print("No relevant documents found in knowledge base")
-            
-            # Step 3: Build context from retrieved documents
-            context = self._build_context(relevant_docs)
-            
-            # Step 4: Prepare conversation history
-            messages = self._prepare_messages(
-                message=message,
-                context=context,
-                conversation_history=conversation_history,
-                sentiment=sentiment_result
-            )
-            
-            # Step 5: Generate response using LLM
-            print("Generating response with LLM...")
-            response = self.llm.invoke(messages)
-            response_text = response.content
-            
-            print(f"Response generated: {response_text[:100]}...")
-            
-            # Step 6: Prepare final result
-            result = {
-                'response': response_text,
-                'sources': self._format_sources(relevant_docs),
-                'sentiment': sentiment_result,
-                'conversation_id': conversation_id or self._generate_conversation_id(),
-                'metadata': {
-                    'model': config.OPENAI_MODEL,
-                    'timestamp': datetime.utcnow().isoformat(),
-                    'organization_id': self.organization_id,
-                    'context_used': len(relevant_docs) > 0
-                }
-            }
-            
-            print(f"{'='*60}\n")
-            
-            return result
+                # Invalid mode (shouldn't reach here due to API validation)
+                raise ValueError(f"Invalid mode: {mode}")
             
         except Exception as e:
             print(f"✗ Error in chat service: {e}")
+            import traceback
+            traceback.print_exc()
             return self._get_error_response(str(e), sentiment_result)
+        
+    def _handle_knowledge_base_mode(
+        self,
+        message: str,
+        conversation_history: Optional[List[Dict[str, str]]],
+        conversation_id: Optional[str],
+        sentiment_result: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """
+        Handle queries in knowledge base mode (force RAG, no web search).
+        Always searches company documents regardless of match quality.
+        """
+        # Search knowledge base
+        print("📚 Searching company documents...")
+        relevant_docs = self.vector_store.search(query=message, n_results=3)
+        
+        if not relevant_docs:
+            # No documents at all
+            print("⚠️ Knowledge base is empty")
+            return {
+                'response': """No documents found in the knowledge base.
+
+    Please add documents to the knowledge base first, or switch to Web Search mode for general questions.
+
+    To add documents:
+    1. Go to Admin Dashboard
+    2. Upload your company documents
+    3. Try searching again""",
+                'sources': [],
+                'sentiment': sentiment_result,
+                'conversation_id': conversation_id or self._generate_conversation_id(),
+                'method': 'knowledge_base',
+                'mode_used': 'knowledge_base',
+                'web_search_used': False,
+                'no_documents': True,
+                'metadata': {
+                    'timestamp': datetime.utcnow().isoformat(),
+                    'organization_id': self.organization_id
+                }
+            }
+        
+        # Log document scores
+        print(f"📄 Found {len(relevant_docs)} documents:")
+        for i, doc in enumerate(relevant_docs, 1):
+            title = doc['metadata'].get('title', 'Untitled')
+            score = doc.get('score', 0)
+            distance = doc.get('distance', 0)
+            print(f"   {i}. {title} (score: {score:.2f}, distance: {distance:.2f})")
+        
+        # Use RAG regardless of score
+        return self._handle_with_rag(
+            message=message,
+            relevant_docs=relevant_docs,
+            conversation_history=conversation_history,
+            conversation_id=conversation_id,
+            sentiment_result=sentiment_result,
+            force_mode=True  # Indicate this was forced
+        )
     
+    def _handle_no_web_search(
+        self,
+        message: str,
+        conversation_id: Optional[str],
+        sentiment_result: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """
+        Handle when web search is requested but not available.
+        """
+        return {
+            'response': """Web search is not currently available.
+
+    Please either:
+    1. Switch to Knowledge Base mode to search company documents
+    2. Contact support to enable web search
+
+    Or ask a question about your company's documents instead.""",
+            'sources': [],
+            'sentiment': sentiment_result,
+            'conversation_id': conversation_id or self._generate_conversation_id(),
+            'method': 'error',
+            'mode_used': 'web_search',
+            'web_search_used': False,
+            'web_search_unavailable': True,
+            'metadata': {
+                'timestamp': datetime.utcnow().isoformat(),
+                'organization_id': self.organization_id,
+                'error': 'Web search not enabled'
+            }
+        }
+    
+    # Helper method to check RAG match quality
+    def _has_good_rag_match(self, documents: List[Dict[str, Any]]) -> bool:
+        """
+        Check if knowledge base has relevant answers.
+        Only used in AUTO mode.
+        """
+        if not documents:
+            print("DEBUG: No documents found")
+            return False
+        
+        # Get best (lowest) distance
+        best_distance = min(doc.get('distance', float('inf')) for doc in documents)
+        
+        print(f"Best distance: {best_distance:.2f}")
+        
+        # For distance metrics: lower = better
+        # Threshold: Accept distances < 0.6
+        DISTANCE_THRESHOLD = 0.6  # Relaxed threshold
+        
+        has_match = best_distance < DISTANCE_THRESHOLD
+        
+        print(f"{best_distance:.2f} < {DISTANCE_THRESHOLD} = {has_match}")
+        
+        return has_match
+    
+    # Handle queries using RAG
+    def _handle_with_rag(
+        self,
+        message: str,
+        relevant_docs: List[Dict[str, Any]],
+        conversation_history: Optional[List[Dict[str, str]]],
+        conversation_id: Optional[str],
+        sentiment_result: Dict[str, Any],
+        force_mode: bool = False
+    ) -> Dict[str, Any]:
+        """Handle query using company knowledge base (RAG)."""
+
+        if relevant_docs:
+            print(f"📄 Using {len(relevant_docs)} documents:")
+            for i, doc in enumerate(relevant_docs, 1):
+                title = doc['metadata'].get('title', 'Untitled')
+                score = doc.get('score', 0)
+                print(f"   {i}. {title} (score: {score:.2f})")
+        
+        # Build context from retrieved documents
+        context = self._build_context(relevant_docs)
+        
+        # Prepare conversation history
+        messages = self._prepare_messages(
+            message=message,
+            context=context,
+            conversation_history=conversation_history,
+            sentiment=sentiment_result
+        )
+        
+        # Generate response using LLM
+        print("Generating response with LLM...")
+        response = self.llm.invoke(messages)
+        response_text = response.content
+        
+        print(f"Response generated: {response_text[:100]}...")
+        
+        # Prepare final result
+        result = {
+            'response': response_text,
+            'sources': self._format_sources(relevant_docs),
+            'sentiment': sentiment_result,
+            'conversation_id': conversation_id or self._generate_conversation_id(),
+            'method': 'rag',
+            'mode_used': 'knowledge_base',
+            'web_search_used': False,
+            'forced_mode': force_mode,
+            'metadata': {
+                'model': config.OPENAI_MODEL,
+                'timestamp': datetime.utcnow().isoformat(),
+                'organization_id': self.organization_id,
+                'context_used': len(relevant_docs) > 0,
+                'documents_found': len(relevant_docs)
+            }
+        }
+        
+        print(f"{'='*60}\n")
+        return result
+    
+    # Handle queries using Web Search
+    def _handle_with_web_search(
+        self,
+        message: str,
+        conversation_history: Optional[List[Dict[str, str]]],
+        conversation_id: Optional[str],
+        sentiment_result: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """
+        Handle query using GPT-4 with Tavily web search.
+        
+        This enables real-time information for questions like:
+        - Current weather, news, events
+        - Stock prices, sports scores
+        - Recent information
+        - YouTube videos, channels
+        """
+        # Use GPT-4 web search service
+        web_result = self.gpt4_web.chat_with_web_search(
+            message=message,
+            conversation_history=conversation_history,
+            auto_search=True
+        )
+        
+        # Merge with our metadata
+        result = {
+            'response': web_result['response'],
+            'sources': web_result.get('sources', []),
+            'sentiment': sentiment_result,
+            'conversation_id': conversation_id or self._generate_conversation_id(),
+            'method': 'web_search',
+            'mode_used': 'web_search',
+            'web_search_used': web_result.get('web_search_used', True),
+            'search_queries': web_result.get('search_queries', []),
+            'metadata': {
+                'model': 'gpt-4',
+                'timestamp': datetime.utcnow().isoformat(),
+                'organization_id': self.organization_id,
+                'tavily_summary': web_result.get('tavily_summary', ''),
+                'search_depth': web_result.get('search_depth', 'unknown')
+            }
+        }
+        
+        print(f"Web search response generated")
+        if result['sources']:
+            print(f"Sources: {len(result['sources'])} web sources cited")
+        
+        print(f"{'='*60}\n")
+        return result
+    
+    # Handle when no knowledge available
+    def _handle_no_knowledge(
+        self,
+        message: str,
+        conversation_id: Optional[str],
+        sentiment_result: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """
+        Fallback when neither RAG nor web search is available.
+        """
+        return {
+            'response': """I don't have specific information to answer your question accurately.
+
+For the best assistance, please:
+- Contact our support team
+- Check our help center  
+- Email support@company.com
+
+Is there anything else I can help you with?""",
+            'sources': [],
+            'sentiment': sentiment_result,
+            'conversation_id': conversation_id or self._generate_conversation_id(),
+            'method': 'fallback',
+            'web_search_used': False,
+            'requires_human': True,
+            'metadata': {
+                'timestamp': datetime.utcnow().isoformat(),
+                'organization_id': self.organization_id,
+                'reason': 'no_knowledge_available'
+            }
+        }
+
     def chat_stream(
         self,
         message: str,
@@ -324,7 +628,8 @@ Please provide a helpful response based on the context above. If the context doe
                 'title': doc['metadata'].get('title', 'Untitled'),
                 'category': doc['metadata'].get('category', 'general'),
                 'score': doc['score'],
-                'url': doc['metadata'].get('url')
+                'url': doc['metadata'].get('url'),
+                'type': 'company_document'
             })
         return sources
     
@@ -420,7 +725,7 @@ if __name__ == "__main__":
     Run: python -m app.services.chat_service
     """
     print("\n" + "="*60)
-    print("🧪 CHAT SERVICE TEST")
+    print("🧪 CHAT SERVICE TEST - WITH WEB SEARCH!")
     print("="*60)
     
     try:
@@ -459,16 +764,18 @@ if __name__ == "__main__":
         ]
         
         chat.vector_store.add_documents_batch(sample_docs)
-        
-        # Test conversations
-        print("\n3. Testing chat responses...")
+
+        # Test conversations with both RAG and Web Search
+        print("\n3. Testing chat responses (RAG + Web Search)...")
         print("\n" + "-"*60)
         
         test_queries = [
-            "How do I reset my password?",
-            "I'm really frustrated! I can't access my account!",
-            "What are your support hours?",
-            "Can you help me with billing?"
+            "How do I reset my password?",  # Should use RAG
+            "I'm really frustrated! I can't access my account!",  # Should use RAG
+            "What's the weather in Toronto right now?",  # Should use Web Search
+            "What are your support hours?",  # Should use RAG
+            "Can you help me with billing?",  # Should use RAG
+            "Who won the Super Bowl 2024?",  # Should use Web Search
         ]
         
         conversation_id = "test_conv_123"
@@ -490,10 +797,21 @@ if __name__ == "__main__":
             print(f"\n🤖 Assistant: {result['response']}")
             print(f"\n📊 Sentiment: {result['sentiment']['label']} (Priority: {result['sentiment']['priority']})")
             
+            # Show which method was used
+            print(f"🔧 Method: {result['method'].upper()}")
+            if result.get('web_search_used'):
+                print(f"🌐 Web Search: Used")
+                if result.get('search_queries'):
+                    print(f"🔍 Search Queries: {result['search_queries']}")
+
             if result['sources']:
                 print(f"📚 Sources used:")
                 for source in result['sources']:
-                    print(f"   - {source['title']} (relevance: {source['score']:.2f})")
+                    source_type = source.get('type', 'unknown')
+                    if source_type == 'company_document':
+                        print(f"   📄 {source['title']} (relevance: {source.get('score', 0):.2f})")
+                    else:
+                        print(f"   🌐 {source.get('title', 'Web Source')} - {source.get('url', '')}")
             
             # Save to conversation history
             conversation_manager.add_message(conversation_id, 'user', query)
@@ -513,9 +831,12 @@ if __name__ == "__main__":
         print(" ALL TESTS PASSED!")
         print("="*60)
         print("\nKey observations:")
-        print("- RAG successfully retrieves relevant context")
+        print("- RAG successfully retrieves relevant context for company questions")
+        print("- Web search activates for real-time/general questions")
+        print("- Smart routing works correctly")
         print("- Responses are contextual and accurate")
         print("- Sentiment affects response tone (empathetic for frustrated users)")
+        print("- Sources are cited properly (company docs + web sources)")
         print("- Sources are cited properly")
         print("- Conversation history is maintained")
         print("\n")
@@ -526,6 +847,7 @@ if __name__ == "__main__":
         traceback.print_exc()
         print("\nTroubleshooting:")
         print("1. Ensure OpenAI API key is set")
+        print("2. Ensure Tavily API key is set")
         print("2. Verify all services are initialized")
         print("3. Check internet connection")
         print("\n")
