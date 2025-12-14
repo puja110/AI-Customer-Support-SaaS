@@ -29,6 +29,7 @@
         gap: 20px;
         flex-wrap: wrap;
         justify-content: center;
+        align-items: stretch;
       }
 
       .info-panel {
@@ -39,6 +40,10 @@
         max-width: 400px;
         flex: 1;
         min-width: 300px;
+        height: 600px;
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
       }
 
       .info-panel h1 {
@@ -50,12 +55,12 @@
       .info-panel p {
         color: #718096;
         line-height: 1.6;
-        margin-bottom: 20px;
+        margin-bottom: 8px;
       }
 
       .features {
         list-style: none;
-        margin: 20px 0;
+        margin: 8px 0 20px 0;
       }
 
       .features li {
@@ -82,6 +87,7 @@
         font-size: 12px;
         font-weight: 600;
         margin-top: 10px;
+        margin-right: 5px;
       }
 
       /* Chat Widget Styles */
@@ -100,7 +106,7 @@
       .chat-header {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
-        padding: 20px;
+        padding: 16px 20px;
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -133,10 +139,130 @@
         opacity: 0.9;
       }
 
+      /* ⭐ ENHANCED: Combined Control Bar - Quick Actions LEFT, Mode Selector RIGHT */
+      .control-bar {
+        padding: 8px 16px; /* REDUCED from 10px for more compact look */
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px; /* REDUCED from 16px */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+      }
+
+      /* Quick Actions Container - LEFT SIDE - 50% WIDTH */
+      .quick-actions {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        flex: 1; /* 50% width */
+        justify-content: flex-start;
+      }
+
+      .quick-action {
+        padding: 4px 10px; /* REDUCED from 6px 14px */
+        background: white;
+        border: 1.5px solid #667eea;
+        border-radius: 16px; /* REDUCED from 20px */
+        font-size: 10px; /* REDUCED from 11px */
+        font-weight: 500;
+        color: #667eea;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        display: inline-flex;
+        align-items: center;
+        gap: 3px; /* REDUCED from 4px */
+        white-space: nowrap;
+        box-shadow: 0 2px 4px rgba(102, 126, 234, 0.08);
+      }
+
+      .quick-action:hover {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        border-color: #667eea;
+      }
+
+      .quick-action:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 4px rgba(102, 126, 234, 0.2);
+      }
+
+      /* Mode Selector Container - RIGHT SIDE - 50% WIDTH */
+      .mode-section {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex: 1; /* 50% width */
+        justify-content: flex-end;
+      }
+
+      .mode-section label {
+        font-weight: 600;
+        font-size: 11px;
+        color: #495057;
+        white-space: nowrap;
+      }
+
+      .mode-section select {
+        padding: 5px 10px 5px 8px; /* REDUCED padding */
+        border: 2px solid #667eea;
+        border-radius: 16px; /* REDUCED from 20px */
+        font-size: 10px; /* REDUCED from 11px */
+        font-weight: 500;
+        background: white;
+        color: #495057;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 2px 4px rgba(102, 126, 234, 0.08);
+        max-width: 130px; /* REDUCED from min-width 150px */
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 12 12'%3E%3Cpath fill='%23667eea' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 6px center; /* ADJUSTED for smaller padding */
+        padding-right: 22px; /* REDUCED from 28px */
+      }
+
+      .mode-section select:hover {
+        border-color: #764ba2;
+        box-shadow: 0 4px 12px rgba(118, 75, 162, 0.15);
+        background-color: #f8f9ff;
+      }
+
+      .mode-section select:focus {
+        outline: none;
+        border-color: #764ba2;
+        box-shadow: 0 0 0 3px rgba(118, 75, 162, 0.15);
+      }
+
+      /* Responsive: Stack on small screens */
+      @media (max-width: 450px) {
+        .control-bar {
+          flex-direction: column;
+          align-items: stretch;
+          gap: 8px;
+          padding: 8px 16px;
+        }
+
+        .quick-actions {
+          justify-content: center;
+        }
+
+        .mode-section {
+          justify-content: space-between;
+        }
+
+        .mode-section select {
+          max-width: none; /* Allow full width on mobile */
+        }
+      }
+
       .chat-messages {
         flex: 1;
         overflow-y: auto;
-        padding: 20px;
+        padding: 16px;
         background: #f7fafc;
       }
 
@@ -230,21 +356,47 @@
         color: #742a2a;
       }
 
+      .mode-indicator {
+        font-size: 11px;
+        color: #666;
+        padding: 4px 8px;
+        background: #f0f0f0;
+        border-radius: 10px;
+        margin: 5px 0;
+        text-align: center;
+      }
+
       .message-sources {
-        margin-top: 8px;
-        padding-top: 8px;
-        border-top: 1px solid #e2e8f0;
+        margin-top: 10px;
+        padding: 10px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        font-size: 12px;
+      }
+
+      .message-sources .source-title {
+        font-weight: bold;
+        margin-bottom: 5px;
+        color: #4a5568;
       }
 
       .source-item {
         font-size: 11px;
         color: #4a5568;
-        padding: 4px 0;
+        padding: 6px;
+        margin: 4px 0;
+        background: white;
+        border-radius: 5px;
+        border-left: 3px solid #667eea;
       }
 
-      .source-item:before {
-        content: "📄";
-        margin-right: 4px;
+      .source-item a {
+        color: #667eea;
+        text-decoration: none;
+      }
+
+      .source-item a:hover {
+        text-decoration: underline;
       }
 
       .typing-indicator {
@@ -281,7 +433,7 @@
       }
 
       .chat-input-container {
-        padding: 16px;
+        padding: 12px 16px;
         background: white;
         border-top: 1px solid #e2e8f0;
       }
@@ -339,46 +491,25 @@
         transform: none;
       }
 
-      /* Quick Actions */
-      .quick-actions {
-        display: flex;
-        gap: 8px;
-        padding: 0 16px 16px;
-        flex-wrap: wrap;
-      }
-
-      .quick-action {
-        padding: 8px 16px;
-        background: #edf2f7;
-        border: 1px solid #e2e8f0;
-        border-radius: 20px;
-        font-size: 12px;
-        color: #4a5568;
-        cursor: pointer;
-        transition: all 0.2s;
-      }
-
-      .quick-action:hover {
-        background: #667eea;
-        color: white;
-        border-color: #667eea;
-      }
-
       /* Scrollbar */
-      .chat-messages::-webkit-scrollbar {
+      .chat-messages::-webkit-scrollbar,
+      .info-panel::-webkit-scrollbar {
         width: 6px;
       }
 
-      .chat-messages::-webkit-scrollbar-track {
+      .chat-messages::-webkit-scrollbar-track,
+      .info-panel::-webkit-scrollbar-track {
         background: transparent;
       }
 
-      .chat-messages::-webkit-scrollbar-thumb {
+      .chat-messages::-webkit-scrollbar-thumb,
+      .info-panel::-webkit-scrollbar-thumb {
         background: #cbd5e0;
         border-radius: 3px;
       }
 
-      .chat-messages::-webkit-scrollbar-thumb:hover {
+      .chat-messages::-webkit-scrollbar-thumb:hover,
+      .info-panel::-webkit-scrollbar-thumb:hover {
         background: #a0aec0;
       }
 
@@ -388,7 +519,7 @@
         color: #742a2a;
         padding: 12px 16px;
         border-radius: 8px;
-        margin: 16px;
+        margin: 16px 0;
         font-size: 14px;
       }
 
@@ -406,6 +537,7 @@
 
         .info-panel {
           max-width: none;
+          height: auto;
         }
       }
     </style>
@@ -417,7 +549,7 @@
         <h1>🤖 AI Support Chat</h1>
         <p>
           Experience intelligent customer support powered by AI and RAG
-          technology.
+          technology. Get instant, accurate answers to your questions 24/7.
         </p>
 
         <ul class="features">
@@ -441,12 +573,28 @@
             border-top: 1px solid #e2e8f0;
           "
         >
-          <p style="font-size: 12px; color: #a0aec0">
-            Try asking:<br />
-            • "How do I reset my password?"<br />
-            • "What's your refund policy?"<br />
-            • "Tell me about your services"
+          <p style="font-size: 14px; color: #4a5568; margin-bottom: 15px">
+            <strong>Choose Your Search Mode:</strong>
           </p>
+
+          <div style="font-size: 13px; color: #718096; line-height: 1.8">
+            <p style="margin-bottom: 12px">
+              <strong style="color: #667eea">📚 Knowledge Base</strong><br />
+              Search through company documentation, policies, and resources for
+              accurate, verified information.
+            </p>
+
+            <p style="margin-bottom: 12px">
+              <strong style="color: #667eea">🌐 Web Search</strong><br />
+              Access real-time information from the internet for current events,
+              weather, news, and more.
+            </p>
+
+            <p style="margin-bottom: 12px">
+              <strong style="color: #667eea">🤖 Auto (Smart)</strong><br />
+              Let the AI automatically decide the best source for your question.
+            </p>
+          </div>
         </div>
       </div>
 
@@ -462,36 +610,47 @@
           </div>
         </div>
 
-        <div class="quick-actions">
-          <button class="quick-action" onclick="sendQuickMessage('Hello!')">
-            👋 Say Hello
-          </button>
-          <button
-            class="quick-action"
-            onclick="sendQuickMessage('How do I reset my password?')"
-          >
-            🔐 Reset Password
-          </button>
-          <button
-            class="quick-action"
-            onclick="sendQuickMessage('I need help')"
-          >
-            ❓ Get Help
-          </button>
+        <!-- ⭐ ENHANCED: Quick Actions (LEFT) + Mode Selector (RIGHT) in ONE ROW -->
+        <div class="control-bar">
+          <!-- Quick Actions - LEFT -->
+          <div class="quick-actions">
+            <button class="quick-action" onclick="sendQuickMessage('Hello!')">
+              👋 Say Hello
+            </button>
+            <button
+              class="quick-action"
+              onclick="sendQuickMessage('I need help')"
+            >
+              ❓ Get Help
+            </button>
+          </div>
+
+          <!-- Mode Selector - RIGHT -->
+          <div class="mode-section">
+            <label for="searchMode">Mode:</label>
+            <select id="searchMode">
+              <option value="auto">🤖 Auto</option>
+              <option value="knowledge_base">📚 Knowledge</option>
+              <option value="web_search">🌐 Web</option>
+            </select>
+          </div>
         </div>
 
+        <!-- Messages -->
         <div class="chat-messages" id="chatMessages">
           <!-- Welcome message -->
           <div class="message bot">
             <div class="message-avatar">🤖</div>
             <div class="message-content">
               <div class="message-text">
-                Hi! I'm your AI assistant. How can I help you today?
+                Hi! I'm your AI assistant. Select a search mode and ask me
+                anything!
               </div>
             </div>
           </div>
         </div>
 
+        <!-- Input -->
         <div class="chat-input-container">
           <div class="chat-input-wrapper">
             <textarea
@@ -519,20 +678,30 @@
     </div>
 
     <script>
-      // Configuration
-      const API_BASE_URL =
-        "https://melodious-connection-production.up.railway.app";
+      // ============================================================
+      // CONFIGURATION
+      // ============================================================
+      const API_BASE_URL = "http://127.0.0.1:5002";
+      // const API_BASE_URL = "https://melodious-connection-production.up.railway.app";
       const ORGANIZATION_ID = "demo_org";
       let conversationId = null;
 
-      // Auto-resize textarea
+      console.log("🚀 Chat Widget Loading...");
+      console.log("📡 API URL:", API_BASE_URL);
+      console.log("🏢 Organization:", ORGANIZATION_ID);
+
+      // ============================================================
+      // AUTO-RESIZE TEXTAREA
+      // ============================================================
       const chatInput = document.getElementById("chatInput");
       chatInput.addEventListener("input", function () {
         this.style.height = "auto";
         this.style.height = this.scrollHeight + "px";
       });
 
-      // Handle Enter key
+      // ============================================================
+      // HANDLE ENTER KEY
+      // ============================================================
       function handleKeyPress(event) {
         if (event.key === "Enter" && !event.shiftKey) {
           event.preventDefault();
@@ -540,88 +709,18 @@
         }
       }
 
-      // Quick message
+      // ============================================================
+      // QUICK MESSAGE BUTTON
+      // ============================================================
       function sendQuickMessage(message) {
-        chatInput.value = message;
+        const input = document.getElementById("chatInput");
+        input.value = message;
         sendMessage();
       }
 
-      // Send message
-      async function sendMessage() {
-        console.log("sendMessage called");
-
-        const input = document.getElementById("chatInput");
-        const message = input.value.trim();
-
-        console.log("Message:", message);
-
-        if (!message) return;
-
-        // Clear input
-        input.value = "";
-        input.style.height = "auto";
-
-        // Disable send button
-        const sendButton = document.getElementById("sendButton");
-        sendButton.disabled = true;
-
-        // Add user message to chat
-        addMessage("user", message);
-
-        // Show typing indicator
-        showTypingIndicator();
-
-        try {
-          console.log("About to fetch...");
-          console.log("URL:", `${API_BASE_URL}/api/chat/message`);
-
-          // Call API
-          const response = await fetch(`${API_BASE_URL}/api/chat/message`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              message: message,
-              organization_id: ORGANIZATION_ID,
-              conversation_id: conversationId,
-            }),
-          });
-
-          console.log("Response received:", response); // ADD THIS
-
-          // ... rest of the function
-
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-
-          const data = await response.json();
-
-          // Hide typing indicator
-          hideTypingIndicator();
-
-          // Save conversation ID
-          if (data.conversation_id) {
-            conversationId = data.conversation_id;
-          }
-
-          // Add bot response
-          addMessage("bot", data.response, {
-            sentiment: data.sentiment,
-            sources: data.sources,
-          });
-        } catch (error) {
-          console.error("Error:", error);
-          hideTypingIndicator();
-          addErrorMessage("Sorry, something went wrong. Please try again.");
-        } finally {
-          sendButton.disabled = false;
-          input.focus();
-        }
-      }
-
-      // Add message to chat
+      // ============================================================
+      // DISPLAY MESSAGE IN CHAT
+      // ============================================================
       function addMessage(role, text, metadata = {}) {
         const messagesContainer = document.getElementById("chatMessages");
 
@@ -663,12 +762,42 @@
           const sourcesDiv = document.createElement("div");
           sourcesDiv.className = "message-sources";
 
-          metadata.sources.forEach((source) => {
+          const titleDiv = document.createElement("div");
+          titleDiv.className = "source-title";
+          titleDiv.textContent =
+            metadata.mode_used === "web_search"
+              ? "🌐 Web Sources:"
+              : "📚 Knowledge Base Sources:";
+          sourcesDiv.appendChild(titleDiv);
+
+          metadata.sources.forEach((source, index) => {
             const sourceItem = document.createElement("div");
             sourceItem.className = "source-item";
-            sourceItem.textContent = `${
-              source.metadata?.title || "Document"
-            } (${Math.round(source.score * 100)}%)`;
+
+            if (metadata.mode_used === "web_search") {
+              // Web search sources
+              sourceItem.innerHTML = `<strong>[${index + 1}]</strong> ${
+                source.title || "Source"
+              }<br>`;
+              if (source.url) {
+                const link = document.createElement("a");
+                link.href = source.url;
+                link.target = "_blank";
+                link.textContent = source.url.substring(0, 50) + "...";
+                sourceItem.appendChild(link);
+              }
+            } else {
+              // Knowledge base sources
+              const title =
+                source.title || source.metadata?.title || "Document";
+              const score = source.score
+                ? ` (${Math.round(source.score * 100)}% match)`
+                : "";
+              sourceItem.innerHTML = `<strong>[${
+                index + 1
+              }]</strong> ${title}${score}`;
+            }
+
             sourcesDiv.appendChild(sourceItem);
           });
 
@@ -682,7 +811,30 @@
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
       }
 
-      // Show typing indicator
+      // ============================================================
+      // DISPLAY MODE INDICATOR
+      // ============================================================
+      function displayModeIndicator(mode) {
+        const messagesContainer = document.getElementById("chatMessages");
+
+        const indicator = document.createElement("div");
+        indicator.className = "mode-indicator";
+
+        const modeEmoji = {
+          knowledge_base: "📚",
+          web_search: "🌐",
+          auto: "🤖",
+        };
+
+        indicator.textContent = `${modeEmoji[mode] || "🤖"} Mode: ${mode
+          .replace("_", " ")
+          .toUpperCase()}`;
+        messagesContainer.appendChild(indicator);
+      }
+
+      // ============================================================
+      // SHOW/HIDE TYPING INDICATOR
+      // ============================================================
       function showTypingIndicator() {
         const messagesContainer = document.getElementById("chatMessages");
 
@@ -710,7 +862,6 @@
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
       }
 
-      // Hide typing indicator
       function hideTypingIndicator() {
         const indicator = document.getElementById("typingIndicator");
         if (indicator) {
@@ -718,7 +869,9 @@
         }
       }
 
-      // Add error message
+      // ============================================================
+      // ADD ERROR MESSAGE
+      // ============================================================
       function addErrorMessage(message) {
         const messagesContainer = document.getElementById("chatMessages");
         const errorDiv = document.createElement("div");
@@ -728,8 +881,108 @@
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
       }
 
-      // Focus input on load
+      // ============================================================
+      // MAIN SEND MESSAGE FUNCTION
+      // ============================================================
+      async function sendMessage() {
+        console.log("sendMessage() called");
+
+        // Get DOM elements
+        const input = document.getElementById("chatInput");
+        const searchModeSelect = document.getElementById("searchMode");
+        const sendButton = document.getElementById("sendButton");
+
+        // Get values
+        const message = input.value.trim();
+        const mode = searchModeSelect.value;
+
+        console.log("Message:", message);
+        console.log("Mode:", mode);
+
+        if (!message) {
+          console.log("Empty message, not sending");
+          return;
+        }
+
+        // Clear input and reset height
+        input.value = "";
+        input.style.height = "auto";
+
+        // Disable send button
+        sendButton.disabled = true;
+
+        // Add user message to chat
+        addMessage("user", message);
+
+        // Show mode indicator
+        displayModeIndicator(mode);
+
+        // Show typing indicator
+        showTypingIndicator();
+
+        try {
+          console.log(
+            "Sending request to:",
+            `${API_BASE_URL}/api/chat/message`
+          );
+
+          // Call API
+          const response = await fetch(`${API_BASE_URL}/api/chat/message`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              message: message,
+              organization_id: ORGANIZATION_ID,
+              conversation_id: conversationId,
+              mode: mode,
+            }),
+          });
+
+          console.log("Response status:", response.status);
+
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(
+              errorData.error ||
+                `HTTP ${response.status}: ${response.statusText}`
+            );
+          }
+
+          const data = await response.json();
+          console.log("Response data:", data);
+
+          // Hide typing indicator
+          hideTypingIndicator();
+
+          // Save conversation ID
+          if (data.conversation_id) {
+            conversationId = data.conversation_id;
+            console.log("Conversation ID:", conversationId);
+          }
+
+          // Add bot response
+          addMessage("bot", data.response, {
+            sentiment: data.sentiment,
+            sources: data.sources,
+            mode_used: data.mode_used || data.method,
+          });
+        } catch (error) {
+          console.error("Error:", error);
+          hideTypingIndicator();
+          addErrorMessage(`Sorry, something went wrong: ${error.message}`);
+        } finally {
+          sendButton.disabled = false;
+          input.focus();
+        }
+      }
+
+      // ============================================================
+      // INITIALIZATION
+      // ============================================================
       window.addEventListener("load", () => {
+        console.log("Chat widget loaded successfully");
         document.getElementById("chatInput").focus();
       });
     </script>
