@@ -462,7 +462,81 @@ class VectorStoreService:
             'document_count': self.collection.count(),
             'collection_metadata': self.collection.metadata
         }
+    
+    def list_documents(self) -> list:
+        """
+        List all documents in the collection
+        
+        Returns:
+            List of documents with metadata
+        """
+        try:
+            # Get all documents
+            results = self.collection.get(
+                include=['metadatas', 'documents']
+            )
+            
+            documents = []
+            for i, doc_id in enumerate(results['ids']):
+                metadata = results['metadatas'][i] if i < len(results['metadatas']) else {}
+                document = results['documents'][i] if i < len(results['documents']) else ''
+                
+                documents.append({
+                    'id': doc_id,
+                    'filename': metadata.get('filename', 'Unknown'),
+                    'category': metadata.get('category', 'general'),
+                    'uploaded_at': metadata.get('uploaded_at', ''),
+                    'file_size': metadata.get('file_size', 0),
+                    'text_preview': document[:200] + '...' if len(document) > 200 else document
+                })
+            
+            return documents
+            
+        except Exception as e:
+            print(f"Error listing documents: {e}")
+            return []
 
+    def delete_document(self, document_id: str) -> bool:
+        """
+        Delete a document from the collection
+        
+        Args:
+            document_id: ID of document to delete
+            
+        Returns:
+            True if deleted successfully, False otherwise
+        """
+        try:
+            self.collection.delete(ids=[document_id])
+            print(f"✓ Deleted document: {document_id}")
+            return True
+            
+        except Exception as e:
+            print(f"Error deleting document {document_id}: {e}")
+            return False
+
+
+    def delete_all_documents(self) -> bool:
+        """
+        Delete all documents from the collection
+        
+        Returns:
+            True if successful
+        """
+        try:
+            # Get all document IDs
+            results = self.collection.get()
+            doc_ids = results['ids']
+            
+            if doc_ids:
+                self.collection.delete(ids=doc_ids)
+                print(f"✓ Deleted {len(doc_ids)} documents")
+            
+            return True
+            
+        except Exception as e:
+            print(f"Error deleting all documents: {e}")
+            return False
 
 # Test/Demo code
 if __name__ == "__main__":
@@ -566,7 +640,7 @@ if __name__ == "__main__":
         print(f"   Collection: {stats['collection_name']}")
         
         print("\n" + "="*60)
-        print("✅ ALL TESTS PASSED!")
+        print("ALL TESTS PASSED!")
         print("="*60)
         print("\nKey observations:")
         print("- Semantic search finds relevant docs even with different wording")
@@ -576,7 +650,7 @@ if __name__ == "__main__":
         print("\n")
         
     except Exception as e:
-        print(f"\n❌ TEST FAILED: {e}")
+        print(f"\nTEST FAILED: {e}")
         print("\nTroubleshooting:")
         print("1. Ensure OpenAI API key is set")
         print("2. Check ChromaDB directory exists")
