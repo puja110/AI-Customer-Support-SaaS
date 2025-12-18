@@ -118,6 +118,50 @@
         gap: 12px;
       }
 
+      .header-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex: 1;
+      }
+
+      .admin-button {
+        padding: 3px 6px;
+        background: rgba(255, 255, 255, 0.2);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 24px;
+        color: white;
+        font-size: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        white-space: nowrap;
+        text-decoration: none;
+      }
+
+      .admin-button:hover {
+        background: rgba(255, 255, 255, 0.3);
+        border-color: rgba(255, 255, 255, 0.5);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      }
+
+      .admin-button-icon {
+        font-size: 12px;
+      }
+
+      @media (max-width: 500px) {
+        .admin-button {
+          padding: 8px 16px;
+        }
+        .admin-button-text {
+          display: none;
+        }
+      }
+
       .bot-avatar {
         width: 40px;
         height: 40px;
@@ -608,6 +652,11 @@
               <div class="chat-status">● Online</div>
             </div>
           </div>
+
+          <a href="/admin-dashboard.html" class="admin-button" target="_blank">
+            <span class="admin-button-icon">⚙️</span>
+            <span class="admin-button-text">Admin</span>
+          </a>
         </div>
 
         <!-- ⭐ ENHANCED: Quick Actions (LEFT) + Mode Selector (RIGHT) in ONE ROW -->
@@ -681,9 +730,9 @@
       // ============================================================
       // CONFIGURATION
       // ============================================================
-      // const API_BASE_URL = "http://127.0.0.1:5002";
-      const API_BASE_URL =
-        "https://melodious-connection-production.up.railway.app";
+      const API_BASE_URL = "http://127.0.0.1:5002";
+      // const API_BASE_URL =
+      //   "https://melodious-connection-production.up.railway.app";
       const ORGANIZATION_ID = "demo_org";
       let conversationId = null;
 

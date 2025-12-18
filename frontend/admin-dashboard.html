@@ -379,9 +379,9 @@
       <div class="header">
         <h1>Admin Dashboard</h1>
         <div class="header-actions">
-          <button class="btn btn-secondary" onclick="refreshStats()">
+          <!-- <button class="btn btn-secondary" onclick="refreshStats()">
             🔄 Refresh
-          </button>
+          </button> -->
           <button class="btn btn-primary" onclick="switchTab('upload')">
             📤 Upload Document
           </button>
@@ -390,14 +390,12 @@
 
       <!-- Tabs -->
       <div class="tabs">
-        <div class="tab active" onclick="switchTab('overview')">
-          📊 Overview
-        </div>
-        <div class="tab" onclick="switchTab('documents')">📄 Documents</div>
+        <div class="tab active" onclick="switchTab('overview')">Overview</div>
+        <div class="tab" onclick="switchTab('documents')">Documents</div>
         <div class="tab" onclick="switchTab('conversations')">
-          💬 Conversations
+          Conversations
         </div>
-        <div class="tab" onclick="switchTab('upload')">📤 Upload</div>
+        <div class="tab" onclick="switchTab('upload')">Upload</div>
       </div>
 
       <!-- Overview Tab -->
@@ -406,22 +404,22 @@
           <div class="stat-card">
             <h3>Total Documents</h3>
             <div class="stat-value" id="totalDocs">-</div>
-            <div class="stat-change">📚 Knowledge Base</div>
+            <div class="stat-change">Knowledge Base</div>
           </div>
           <div class="stat-card">
             <h3>Total Conversations</h3>
             <div class="stat-value" id="totalConvs">-</div>
-            <div class="stat-change">💬 Chat History</div>
+            <div class="stat-change">Chat History</div>
           </div>
           <div class="stat-card">
             <h3>Avg. Response Time</h3>
             <div class="stat-value">2.3s</div>
-            <div class="stat-change">⚡ Performance</div>
+            <div class="stat-change">Performance</div>
           </div>
           <div class="stat-card">
             <h3>Customer Satisfaction</h3>
             <div class="stat-value">94%</div>
-            <div class="stat-change">😊 Sentiment Analysis</div>
+            <div class="stat-change">Sentiment Analysis</div>
           </div>
         </div>
 
@@ -553,15 +551,16 @@
           </div>
 
           <button class="btn btn-primary" onclick="batchUpload()">
-            📦 Batch Upload
+            Batch Upload
           </button>
         </div>
       </div>
     </div>
 
     <script>
-      const API_BASE_URL =
-        "https://melodious-connection-production.up.railway.app";
+      const API_BASE_URL = "http://127.0.0.1:5002";
+      // const API_BASE_URL =
+      //   "https://melodious-connection-production.up.railway.app";
       const ORGANIZATION_ID = "demo_org";
 
       // Switch tabs
@@ -750,7 +749,7 @@
             showAlert(
               "uploadAlert",
               "success",
-              `✅ Document uploaded successfully! ID: ${data.document_id}`
+              `Document uploaded successfully! ID: ${data.document_id}`
             );
 
             // Clear form
@@ -846,14 +845,14 @@
           );
 
           if (response.ok) {
-            alert("✅ Conversation deleted");
+            alert("Conversation deleted");
             loadConversations();
             refreshStats();
           } else {
-            alert("❌ Error deleting conversation");
+            alert("Error deleting conversation");
           }
         } catch (error) {
-          alert("❌ Error deleting conversation");
+          alert("Error deleting conversation");
         }
       }
 
