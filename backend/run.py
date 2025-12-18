@@ -49,6 +49,9 @@ def create_app(config_name=None):
     # Register blueprints (API routes)
     from app.api.chat import chat_bp
     app.register_blueprint(chat_bp)
+
+    from app.api.admin import admin_bp
+    app.register_blueprint(admin_bp)
     
     try:
         from app.api.documents import documents_bp

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin Dashboard - AI Support SaaS</title>
+    <title>Admin Dashboard - Document Management</title>
     <style>
       * {
         margin: 0;
@@ -379,9 +379,9 @@
       <div class="header">
         <h1>Admin Dashboard</h1>
         <div class="header-actions">
-          <button class="btn btn-secondary" onclick="refreshStats()">
+          <!-- <button class="btn btn-secondary" onclick="refreshStats()">
             🔄 Refresh
-          </button>
+          </button> -->
           <button class="btn btn-primary" onclick="switchTab('upload')">
             📤 Upload Document
           </button>
@@ -390,14 +390,12 @@
 
       <!-- Tabs -->
       <div class="tabs">
-        <div class="tab active" onclick="switchTab('overview')">
-          📊 Overview
-        </div>
-        <div class="tab" onclick="switchTab('documents')">📄 Documents</div>
+        <div class="tab active" onclick="switchTab('overview')">Overview</div>
+        <div class="tab" onclick="switchTab('documents')">Documents</div>
         <div class="tab" onclick="switchTab('conversations')">
-          💬 Conversations
+          Conversations
         </div>
-        <div class="tab" onclick="switchTab('upload')">📤 Upload</div>
+        <div class="tab" onclick="switchTab('upload')">Upload</div>
       </div>
 
       <!-- Overview Tab -->
@@ -406,22 +404,22 @@
           <div class="stat-card">
             <h3>Total Documents</h3>
             <div class="stat-value" id="totalDocs">-</div>
-            <div class="stat-change">📚 Knowledge Base</div>
+            <div class="stat-change">Knowledge Base</div>
           </div>
           <div class="stat-card">
             <h3>Total Conversations</h3>
             <div class="stat-value" id="totalConvs">-</div>
-            <div class="stat-change">💬 Chat History</div>
+            <div class="stat-change">Chat History</div>
           </div>
           <div class="stat-card">
             <h3>Avg. Response Time</h3>
             <div class="stat-value">2.3s</div>
-            <div class="stat-change">⚡ Performance</div>
+            <div class="stat-change">Performance</div>
           </div>
           <div class="stat-card">
             <h3>Customer Satisfaction</h3>
             <div class="stat-value">94%</div>
-            <div class="stat-change">😊 Sentiment Analysis</div>
+            <div class="stat-change">Sentiment Analysis</div>
           </div>
         </div>
 
@@ -480,17 +478,89 @@
           <div id="uploadAlert"></div>
 
           <form onsubmit="uploadDocument(event)">
+            <!-- NEW: File Upload Option -->
             <div class="form-group">
-              <label class="form-label">Document Title *</label>
-              <input
-                type="text"
-                class="form-input"
-                id="docTitle"
-                placeholder="e.g., Password Reset Guide"
-                required
-              />
+              <label class="form-label">Upload Method</label>
+              <div style="display: flex; gap: 12px; margin-bottom: 12px">
+                <label
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    cursor: pointer;
+                  "
+                >
+                  <input
+                    type="radio"
+                    name="uploadMethod"
+                    value="file"
+                    checked
+                    onchange="toggleUploadMethod()"
+                  />
+                  Upload File (PDF, DOCX, TXT, Images)
+                </label>
+                <label
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    cursor: pointer;
+                  "
+                >
+                  <input
+                    type="radio"
+                    name="uploadMethod"
+                    value="text"
+                    onchange="toggleUploadMethod()"
+                  />
+                  Paste Text Content
+                </label>
+              </div>
             </div>
 
+            <!-- File Upload Section (NEW) -->
+            <div id="fileUploadSection">
+              <div class="form-group">
+                <label class="form-label">Select Document *</label>
+                <input
+                  type="file"
+                  class="form-input"
+                  id="docFile"
+                  accept=".pdf,.docx,.doc,.txt,.png,.jpg,.jpeg"
+                  style="padding: 8px"
+                />
+                <div class="form-hint">
+                  Supported formats: PDF, DOCX, TXT, Images (PNG, JPG)
+                </div>
+              </div>
+            </div>
+
+            <!-- Text Upload Section (Original) -->
+            <div id="textUploadSection" style="display: none">
+              <div class="form-group">
+                <label class="form-label">Document Title *</label>
+                <input
+                  type="text"
+                  class="form-input"
+                  id="docTitle"
+                  placeholder="e.g., Password Reset Guide"
+                />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Content *</label>
+                <textarea
+                  class="form-textarea"
+                  id="docContent"
+                  placeholder="Enter the document content here..."
+                ></textarea>
+                <div class="form-hint">
+                  This content will be used by the AI to answer questions
+                </div>
+              </div>
+            </div>
+
+            <!-- Category (Common for both) -->
             <div class="form-group">
               <label class="form-label">Category</label>
               <select class="form-select" id="docCategory">
@@ -499,30 +569,10 @@
                 <option value="billing">Billing</option>
                 <option value="technical">Technical</option>
                 <option value="support">Support</option>
+                <option value="faq">FAQ</option>
+                <option value="policies">Policies</option>
+                <option value="product">Product Documentation</option>
               </select>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label">Content *</label>
-              <textarea
-                class="form-textarea"
-                id="docContent"
-                placeholder="Enter the document content here..."
-                required
-              ></textarea>
-              <div class="form-hint">
-                This content will be used by the AI to answer questions
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label">Tags (comma-separated)</label>
-              <input
-                type="text"
-                class="form-input"
-                id="docTags"
-                placeholder="e.g., password, security, account"
-              />
             </div>
 
             <div class="form-group">
@@ -553,15 +603,16 @@
           </div>
 
           <button class="btn btn-primary" onclick="batchUpload()">
-            📦 Batch Upload
+            Batch Upload
           </button>
         </div>
       </div>
     </div>
 
     <script>
-      const API_BASE_URL =
-        "https://melodious-connection-production.up.railway.app";
+      const API_BASE_URL = "http://127.0.0.1:5002";
+      // const API_BASE_URL =
+      //   "https://melodious-connection-production.up.railway.app";
       const ORGANIZATION_ID = "demo_org";
 
       // Switch tabs
@@ -589,25 +640,34 @@
       }
 
       // Refresh stats
+      // Refresh stats
       async function refreshStats() {
         try {
-          // Get document stats
+          // Get document stats (use new endpoint)
           const docResponse = await fetch(
-            `${API_BASE_URL}/api/documents/stats?organization_id=${ORGANIZATION_ID}`
+            `${API_BASE_URL}/api/admin/documents?organization_id=${ORGANIZATION_ID}`
           );
-          const docStats = await docResponse.json();
-          document.getElementById("totalDocs").textContent =
-            docStats.document_count || 0;
+          const docData = await docResponse.json();
+
+          document.getElementById("totalDocs").textContent = docData.documents
+            ? docData.documents.length
+            : 0;
 
           // Get conversation stats
-          const convResponse = await fetch(
-            `${API_BASE_URL}/api/chat/conversations?organization_id=${ORGANIZATION_ID}`
-          );
-          const convStats = await convResponse.json();
-          document.getElementById("totalConvs").textContent =
-            convStats.total || 0;
+          try {
+            const convResponse = await fetch(
+              `${API_BASE_URL}/api/chat/conversations?organization_id=${ORGANIZATION_ID}`
+            );
+            const convStats = await convResponse.json();
+            document.getElementById("totalConvs").textContent =
+              convStats.total || 0;
+          } catch (error) {
+            // Conversations endpoint might not exist yet
+            document.getElementById("totalConvs").textContent = "N/A";
+          }
         } catch (error) {
           console.error("Error refreshing stats:", error);
+          document.getElementById("totalDocs").textContent = "Error";
         }
       }
 
@@ -619,36 +679,84 @@
 
         try {
           const response = await fetch(
-            `${API_BASE_URL}/api/documents/stats?organization_id=${ORGANIZATION_ID}`
+            `${API_BASE_URL}/api/admin/documents?organization_id=${ORGANIZATION_ID}`
           );
           const data = await response.json();
 
-          if (data.document_count === 0) {
+          if (!response.ok) {
+            throw new Error(data.error || "Failed to load documents");
+          }
+
+          if (!data.documents || data.documents.length === 0) {
             container.innerHTML = `
-                        <div class="empty-state">
-                            <div style="font-size: 48px; margin-bottom: 16px;">📄</div>
-                            <h3>No documents yet</h3>
-                            <p>Upload your first document to get started</p>
-                            <button class="btn btn-primary" onclick="switchTab('upload')" style="margin-top: 20px;">
-                                Upload Document
-                            </button>
-                        </div>
-                    `;
+        <div class="empty-state">
+          <div style="font-size: 48px; margin-bottom: 16px;">📄</div>
+          <h3>No documents yet</h3>
+          <p>Upload your first document to get started</p>
+          <button class="btn btn-primary" onclick="switchTab('upload')" style="margin-top: 20px;">
+            Upload Document
+          </button>
+        </div>
+      `;
           } else {
-            container.innerHTML = `
-                        <div class="alert alert-info">
-                            Found <strong>${data.document_count}</strong> documents in collection <strong>${data.collection_name}</strong>
-                        </div>
-                        <p style="color: #718096; font-size: 14px;">
-                            Full document listing requires database integration. 
-                            Document details are currently stored in the vector database.
-                        </p>
-                    `;
+            let html = `
+        <div class="alert alert-success">
+          Found <strong>${data.documents.length}</strong> documents in knowledge base
+        </div>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Filename</th>
+              <th>Category</th>
+              <th>Uploaded</th>
+              <th>Size</th>
+              <th>Preview</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+            data.documents.forEach((doc) => {
+              const filename = doc.filename || "Unknown";
+              const fileIcon = getFileIcon(filename);
+              const category = doc.category || "general";
+              const uploadedAt = doc.uploaded_at
+                ? new Date(doc.uploaded_at).toLocaleString()
+                : "Unknown";
+              const fileSize = doc.file_size
+                ? formatFileSize(doc.file_size)
+                : "N/A";
+              const preview = doc.text_preview || "No preview available";
+
+              html += `
+          <tr>
+            <td>${fileIcon} ${filename}</td>
+            <td><span class="badge badge-success">${category}</span></td>
+            <td style="font-size: 12px;">${uploadedAt}</td>
+            <td>${fileSize}</td>
+            <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px;">
+              ${preview}
+            </td>
+            <td>
+              <button class="btn btn-danger" onclick="deleteDocument('${doc.id}', '${filename}')" style="padding: 6px 12px; font-size: 12px;">
+                🗑️ Delete
+              </button>
+            </td>
+          </tr>
+        `;
+            });
+
+            html += "</tbody></table>";
+            container.innerHTML = html;
           }
         } catch (error) {
           console.error("Error loading documents:", error);
-          container.innerHTML =
-            '<div class="alert alert-error">Error loading documents</div>';
+          container.innerHTML = `
+      <div class="alert alert-error">
+        Error loading documents: ${error.message}
+      </div>
+    `;
         }
       }
 
@@ -714,35 +822,72 @@
       async function uploadDocument(event) {
         event.preventDefault();
 
-        const title = document.getElementById("docTitle").value;
-        const category = document.getElementById("docCategory").value;
-        const content = document.getElementById("docContent").value;
-        const tags = document
-          .getElementById("docTags")
-          .value.split(",")
-          .map((t) => t.trim())
-          .filter((t) => t);
-
+        const uploadMethod = document.querySelector(
+          'input[name="uploadMethod"]:checked'
+        ).value;
         const uploadBtn = document.getElementById("uploadBtn");
+
         uploadBtn.disabled = true;
         uploadBtn.textContent = "⏳ Uploading...";
 
         try {
-          const response = await fetch(`${API_BASE_URL}/api/documents/upload`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              content: content,
-              metadata: {
-                title: title,
-                category: category,
-                tags: tags,
+          let response;
+
+          if (uploadMethod === "file") {
+            // File upload
+            const fileInput = document.getElementById("docFile");
+            const file = fileInput.files[0];
+
+            if (!file) {
+              showAlert("uploadAlert", "error", "Please select a file");
+              return;
+            }
+
+            const formData = new FormData();
+            formData.append("file", file);
+            formData.append("organization_id", ORGANIZATION_ID);
+            formData.append(
+              "category",
+              document.getElementById("docCategory").value
+            );
+
+            response = await fetch(
+              `${API_BASE_URL}/api/admin/upload-document`,
+              {
+                method: "POST",
+                body: formData,
+              }
+            );
+          } else {
+            // Text upload (original method)
+            const title = document.getElementById("docTitle").value;
+            const content = document.getElementById("docContent").value;
+            const category = document.getElementById("docCategory").value;
+
+            if (!title || !content) {
+              showAlert(
+                "uploadAlert",
+                "error",
+                "Please fill in all required fields"
+              );
+              return;
+            }
+
+            response = await fetch(`${API_BASE_URL}/api/documents/upload`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
               },
-              organization_id: ORGANIZATION_ID,
-            }),
-          });
+              body: JSON.stringify({
+                content: content,
+                metadata: {
+                  title: title,
+                  category: category,
+                },
+                organization_id: ORGANIZATION_ID,
+              }),
+            });
+          }
 
           const data = await response.json();
 
@@ -750,22 +895,27 @@
             showAlert(
               "uploadAlert",
               "success",
-              `✅ Document uploaded successfully! ID: ${data.document_id}`
+              `Document uploaded successfully! ${
+                data.filename || data.document_id
+              }`
             );
 
             // Clear form
-            document.getElementById("docTitle").value = "";
-            document.getElementById("docContent").value = "";
-            document.getElementById("docTags").value = "";
+            if (uploadMethod === "file") {
+              document.getElementById("docFile").value = "";
+            } else {
+              document.getElementById("docTitle").value = "";
+              document.getElementById("docContent").value = "";
+            }
 
             // Refresh stats
             refreshStats();
           } else {
-            showAlert("uploadAlert", "error", `❌ Error: ${data.error}`);
+            showAlert("uploadAlert", "error", `Error: ${data.error}`);
           }
         } catch (error) {
           console.error("Error uploading document:", error);
-          showAlert("uploadAlert", "error", "❌ Error uploading document");
+          showAlert("uploadAlert", "error", "Error uploading document");
         } finally {
           uploadBtn.disabled = false;
           uploadBtn.textContent = "📤 Upload Document";
@@ -793,14 +943,14 @@
           const data = await response.json();
 
           if (response.ok) {
-            alert(`✅ Uploaded ${data.count} documents!`);
+            alert(`Uploaded ${data.count} documents!`);
             document.getElementById("batchJson").value = "";
             refreshStats();
           } else {
-            alert(`❌ Error: ${data.error}`);
+            alert(`Error: ${data.error}`);
           }
         } catch (error) {
-          alert("❌ Invalid JSON format");
+          alert("Invalid JSON format");
         }
       }
 
@@ -846,14 +996,14 @@
           );
 
           if (response.ok) {
-            alert("✅ Conversation deleted");
+            alert("Conversation deleted");
             loadConversations();
             refreshStats();
           } else {
-            alert("❌ Error deleting conversation");
+            alert("Error deleting conversation");
           }
         } catch (error) {
-          alert("❌ Error deleting conversation");
+          alert("Error deleting conversation");
         }
       }
 
@@ -893,6 +1043,88 @@
       window.addEventListener("load", () => {
         refreshStats();
       });
+
+      // Toggle upload method
+      function toggleUploadMethod() {
+        const method = document.querySelector(
+          'input[name="uploadMethod"]:checked'
+        ).value;
+        const fileSection = document.getElementById("fileUploadSection");
+        const textSection = document.getElementById("textUploadSection");
+
+        if (method === "file") {
+          fileSection.style.display = "block";
+          textSection.style.display = "none";
+          // Remove required from text fields
+          document.getElementById("docTitle").removeAttribute("required");
+          document.getElementById("docContent").removeAttribute("required");
+        } else {
+          fileSection.style.display = "none";
+          textSection.style.display = "block";
+          // Add required to text fields
+          document
+            .getElementById("docTitle")
+            .setAttribute("required", "required");
+          document
+            .getElementById("docContent")
+            .setAttribute("required", "required");
+        }
+      }
+
+      // Delete document
+      async function deleteDocument(docId, filename) {
+        if (!confirm(`Are you sure you want to delete "${filename}"?`)) {
+          return;
+        }
+
+        try {
+          const response = await fetch(
+            `${API_BASE_URL}/api/admin/documents/${docId}?organization_id=${ORGANIZATION_ID}`,
+            {
+              method: "DELETE",
+            }
+          );
+
+          const data = await response.json();
+
+          if (response.ok) {
+            alert("Document deleted successfully");
+            loadDocuments();
+            refreshStats();
+          } else {
+            alert(`Error: ${data.error}`);
+          }
+        } catch (error) {
+          console.error("Delete error:", error);
+          alert("Error deleting document");
+        }
+      }
+
+      // Get file icon
+      function getFileIcon(filename) {
+        const ext = filename.split(".").pop().toLowerCase();
+        const icons = {
+          pdf: "📄",
+          docx: "📝",
+          doc: "📝",
+          txt: "📃",
+          png: "🖼️",
+          jpg: "🖼️",
+          jpeg: "🖼️",
+        };
+        return icons[ext] || "📎";
+      }
+
+      // Format file size
+      function formatFileSize(bytes) {
+        if (!bytes || bytes === 0) return "0 Bytes";
+        const k = 1024;
+        const sizes = ["Bytes", "KB", "MB", "GB"];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return (
+          Math.round((bytes / Math.pow(k, i)) * 100) / 100 + " " + sizes[i]
+        );
+      }
     </script>
   </body>
 </html>
