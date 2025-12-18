@@ -727,12 +727,9 @@
     </div>
 
     <script>
-      // ============================================================
       // CONFIGURATION
-      // ============================================================
-      const API_BASE_URL = "http://127.0.0.1:5002";
-      // const API_BASE_URL =
-      //   "https://melodious-connection-production.up.railway.app";
+      const API_BASE_URL =
+        "https://melodious-connection-production.up.railway.app";
       const ORGANIZATION_ID = "demo_org";
       let conversationId = null;
 
@@ -740,18 +737,14 @@
       console.log("📡 API URL:", API_BASE_URL);
       console.log("🏢 Organization:", ORGANIZATION_ID);
 
-      // ============================================================
       // AUTO-RESIZE TEXTAREA
-      // ============================================================
       const chatInput = document.getElementById("chatInput");
       chatInput.addEventListener("input", function () {
         this.style.height = "auto";
         this.style.height = this.scrollHeight + "px";
       });
 
-      // ============================================================
       // HANDLE ENTER KEY
-      // ============================================================
       function handleKeyPress(event) {
         if (event.key === "Enter" && !event.shiftKey) {
           event.preventDefault();
@@ -759,18 +752,14 @@
         }
       }
 
-      // ============================================================
       // QUICK MESSAGE BUTTON
-      // ============================================================
       function sendQuickMessage(message) {
         const input = document.getElementById("chatInput");
         input.value = message;
         sendMessage();
       }
 
-      // ============================================================
       // DISPLAY MESSAGE IN CHAT
-      // ============================================================
       function addMessage(role, text, metadata = {}) {
         const messagesContainer = document.getElementById("chatMessages");
 
@@ -861,9 +850,7 @@
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
       }
 
-      // ============================================================
       // DISPLAY MODE INDICATOR
-      // ============================================================
       function displayModeIndicator(mode) {
         const messagesContainer = document.getElementById("chatMessages");
 
@@ -882,9 +869,7 @@
         messagesContainer.appendChild(indicator);
       }
 
-      // ============================================================
       // SHOW/HIDE TYPING INDICATOR
-      // ============================================================
       function showTypingIndicator() {
         const messagesContainer = document.getElementById("chatMessages");
 
@@ -919,9 +904,7 @@
         }
       }
 
-      // ============================================================
       // ADD ERROR MESSAGE
-      // ============================================================
       function addErrorMessage(message) {
         const messagesContainer = document.getElementById("chatMessages");
         const errorDiv = document.createElement("div");
@@ -931,9 +914,7 @@
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
       }
 
-      // ============================================================
       // MAIN SEND MESSAGE FUNCTION
-      // ============================================================
       async function sendMessage() {
         console.log("sendMessage() called");
 
@@ -1028,9 +1009,7 @@
         }
       }
 
-      // ============================================================
       // INITIALIZATION
-      // ============================================================
       window.addEventListener("load", () => {
         console.log("Chat widget loaded successfully");
         document.getElementById("chatInput").focus();
